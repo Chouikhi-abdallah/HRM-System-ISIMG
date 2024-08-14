@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Visitor {
+  id               Int         @id @default(autoincrement())
+  firstName        String
+  lastName         String
+  email            String      @unique
+  visitorType      VisitorType
+  password         String
+  employee         Employee?
+  hrAdmin          HRAdmin?
+  manager          Manager?
+  messagesReceived Message[]   @relation("MessagesReceived")
+  messagesSent     Message[]   @relation("MessagesSent")
+}
+
+model Employee {
+  id           Int        @id @default(autoincrement())
+  visitorId    Int        @unique
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
+  visitor      Visitor    @relation(fields: [visitorId], references: [id])
+  Payroll      Payroll[]
+  tasks        Task[]
+  Vacation     Vacation[]
+}
+
+model Manager {
+  id           Int         @id @default(autoincrement())
+  visitorId    Int         @unique
+  departmentId Int         @unique
+  department   Department @relation(fields: [departmentId], references: [id])
+  visitor      Visitor     @relation(fields: [visitorId], references: [id])
+  tasks        Task[]
+}
+
+
+model HRAdmin {
+  id        Int        @id @default(autoincrement())
+  visitorId Int        @unique
+  visitor   Visitor    @relation(fields: [visitorId], references: [id])
+  trainings Training[]
+  payrolls  Payroll[]  @relation("HRAdminToPayroll")
+  vacations Vacation[] @relation("HRAdminToVacation")
+}
+
+model Task {
+  id             Int       @id @default(autoincrement())
+  title          String
+  description    String
+  status         String
+  completionDate DateTime?
+  employeeId     Int
+  managerId      Int
+  employee       Employee  @relation(fields: [employeeId], references: [id])
+  manager        Manager   @relation(fields: [managerId], references: [id])
+}
+
+model Message {
+  id         Int     @id @default(autoincrement())
+  text       String
+  senderId   Int
+  receiverId Int
+  receiver   Visitor @relation("MessagesReceived", fields: [receiverId], references: [id])
+  sender     Visitor @relation("MessagesSent", fields: [senderId], references: [id])
+}
+
+model Training {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  schedule    DateTime
+  hrAdminId   Int
+  hrAdmin     HRAdmin  @relation(fields: [hrAdminId], references: [id])
+}
+
+model Department {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  employees Employee[]
+  manager   Manager?   @relation
+}
+
+model Payroll {
+  id          Int       @id @default(autoincrement())
+  employeeId  Int
+  salary      Float
+  paymentDate DateTime
+  employee    Employee  @relation(fields: [employeeId], references: [id])
+  HRAdmin     HRAdmin[] @relation("HRAdminToPayroll")
+}
+
+model Vacation {
+  id         Int       @id @default(autoincrement())
+  employeeId Int
+  startDate  DateTime
+  endDate    DateTime
+  status     String
+  employee   Employee  @relation(fields: [employeeId], references: [id])
+  HRAdmin    HRAdmin[] @relation("HRAdminToVacation")
+}
+
+enum VisitorType {
+  EMPLOYEE
+  MANAGER
+  HRADMIN
+}
