@@ -1,0 +1,21 @@
+# this is a configuration taken from the official website of docker containers docker hub
+version: '3.9'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: abdallah
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: hrm
+    ports:
+      - "5434:5432"  # Map port 5433 on the host to port 5432 in the container
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
