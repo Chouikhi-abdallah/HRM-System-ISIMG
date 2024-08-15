@@ -22,7 +22,7 @@ const signup = async (req, res) => {
       }
     });
 
-    // Find the department using findFirst
+    // Find the department 
     const department = await prisma.department.findUnique({ where: { name: departmentName } });
     if (!department) {
       return res.status(400).json({ error: 'Department does not exist' });
