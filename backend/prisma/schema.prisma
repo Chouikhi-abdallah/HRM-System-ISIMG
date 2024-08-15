@@ -18,6 +18,8 @@ model Visitor {
   firstName        String
   lastName         String
   email            String      @unique
+  phone            String
+  sex              String
   visitorType      VisitorType
   password         String
   employee         Employee?
@@ -108,7 +110,6 @@ model Vacation {
   employeeId Int
   startDate  DateTime
   endDate    DateTime
-  status     String
   employee   Employee  @relation(fields: [employeeId], references: [id])
   HRAdmin    HRAdmin[] @relation("HRAdminToVacation")
 }
