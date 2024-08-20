@@ -6,4 +6,4 @@ const {getAllEmployees, getEmployeeById}= require('../controllers/employeeContro
 router.get('/all', getAllEmployees);
 router.get('/byid/:id', getEmployeeById);
 
-module.exports = router;;
+module.exports = router;
