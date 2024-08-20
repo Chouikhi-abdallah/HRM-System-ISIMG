@@ -11,3 +11,7 @@ const getAllDepartments= async (req,res)=>{
         res.status(500).json({error: 'Could not get departments'});
     }
 };
+
+module.exports={
+    getAllDepartments,
+};
