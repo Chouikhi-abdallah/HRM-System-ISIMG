@@ -31,7 +31,7 @@ const signup = async (req, res) => {
     // if the visitor isn't an HRadmin we will have in the request body the departmenet name 
     //to add so the employee or the manger after adding the visitor
 
-    // Find the department using findFirst
+    // Find the department using findUnique
     const department = await prisma.department.findUnique({ where: { name: departmentName } });
     if (!department) {
       return res.status(400).json({ error: 'Department does not exist' });
