@@ -1,0 +1,87 @@
+const {PrismaClient} = require('@prisma/client');
+const prisma = new PrismaClient();
+
+const createTask= async (req,res)=>{
+    const {title,description,status,Completiondate,employeeId,managerId}= req.body;
+    try{
+        //if the employee doesn't exist, return an error
+        const employee= await prisma.employee.findUnique({
+            where:{
+                id: parseInt(employeeId)
+            }
+        });
+        if(!employee){
+            res.status(404).json({error: 'Employee not found'});
+            return;
+        }
+
+        const task= await prisma.task.create({
+            data:{
+                title,
+                description,
+                status,
+                completionDate:new Date(Completiondate),
+                employeeId: parseInt(employeeId),
+                managerId: parseInt(managerId)
+            }
+        });
+        res.json({"message":"Task created successfully"});
+        res.status(200);
+    }
+    catch(error){
+        res.status(500).json({error: 'Could not create task'});
+    }
+}
+
+const getTasksByEmployeeId= async (req,res)=>{
+    const {employeeId}= req.params;
+    try{
+        const tasks= await prisma.task.findMany({
+            where:{
+                employeeId: parseInt(employeeId)
+            }
+        });
+        res.json(tasks);
+        res.status(200);
+    }
+    catch(error){
+        res.status(500).json({error: 'Could not get tasks'});
+    }
+}
+const getTaskById= async (req,res)=>{
+    const {taskId}= req.params;
+    try{
+        const task= await prisma.task.findUnique({
+            where:{
+                id: parseInt(taskId)
+            }
+        });
+        res.json(task);
+        res.status(200);
+    }
+    catch(error){
+        res.status(500).json({error: 'Could not get task'});
+    }
+}
+
+const changeTaskStatus= async (req,res)=>{
+    const {taskId}= req.params;
+    const {status}= req.body;
+    try{
+        const task= await prisma.task.update({
+            where:{
+                id: parseInt(taskId)
+            },
+            data:{
+                status
+            }
+        });
+        res.json(task);
+        res.status(200);
+    }
+    catch(error){
+        res.status(500).json({error: 'Could not update task status'});
+    }
+}
+
+module.exports={ createTask, getTasksByEmployeeId, getTaskById, changeTaskStatus};
