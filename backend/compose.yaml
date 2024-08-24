@@ -1,4 +1,11 @@
 # this is a configuration taken from the official website of docker containers docker hub
+# this configuration is used to create a container for the database and another container for the adminer
+# adminer is a web interface for managing databases
+# the database container is using the postgres image and the adminer container is using the adminer image
+# the database container is using the port 5434 and the adminer container is using the port 8080
+# the database container is using the user abdallah and the password root and the database name is hrm
+# the adminer container is using the default port 8080
+# change the port of the database container to 5433 and the port of the adminer container to 8081
 version: '3.9'
 
 services:
