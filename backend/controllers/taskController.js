@@ -1,6 +1,8 @@
 const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
 
+//this is the logic for creating a task
+
 const createTask= async (req,res)=>{
     const {title,description,status,Completiondate,employeeId,managerId}= req.body;
     try{
@@ -32,6 +34,7 @@ const createTask= async (req,res)=>{
         res.status(500).json({error: 'Could not create task'});
     }
 }
+// this is the logic for getting all tasks by employee id
 
 const getTasksByEmployeeId= async (req,res)=>{
     const {employeeId}= req.params;
@@ -64,6 +67,9 @@ const getTaskById= async (req,res)=>{
     }
 }
 
+
+//this is the logic for updating a task status
+
 const changeTaskStatus= async (req,res)=>{
     const {taskId}= req.params;
     const {status}= req.body;
@@ -84,4 +90,20 @@ const changeTaskStatus= async (req,res)=>{
     }
 }
 
-module.exports={ createTask, getTasksByEmployeeId, getTaskById, changeTaskStatus};
+const getTasksByManagerId= async (req,res)=>{
+    const {managerId}= req.params;
+    try{
+        const tasks= await prisma.task.findMany({
+            where:{
+                managerId: parseInt(managerId)
+            }
+        });
+        res.json(tasks);
+        res.status(200);
+    }
+    catch(error){
+        res.status(500).json({error: 'Could not get tasks'});
+    }
+}
+
+module.exports={ createTask, getTasksByEmployeeId, getTaskById, changeTaskStatus,getTasksByManagerId};
