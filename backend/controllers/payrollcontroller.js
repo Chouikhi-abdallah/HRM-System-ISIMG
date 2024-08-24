@@ -1,6 +1,7 @@
 const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
 
+//this is the logic for creating a payroll
 const createPayroll= async (req,res)=>{
     const {employeeId,salary,paymentDate}=req.body; 
     try{
@@ -42,6 +43,8 @@ const getPayrollByEmployeeId= async (req,res)=>{
         res.status(500).json({error: 'Could not get payroll'});
     }
 };
+
+//this is the logic for getting a payroll by id
 
 const getPayrollById= async (req,res)=>{
     const {payrollId}= req.params;
