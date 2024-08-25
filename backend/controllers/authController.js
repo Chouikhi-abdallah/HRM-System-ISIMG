@@ -8,7 +8,7 @@ const authHelper = require('../helpers/authHelper');
 // async function signup to handle the request and response and async keyword is used to handle the promises and non-blocking code
 const signup = async (req, res) => {
   // get the request from the body
-  const { firstName, lastName, email, password, visitorType, departmentName, phone, sex } = req.body;
+  const { firstName, lastName, email, password, visitorType, departmentName, phone, sex,age } = req.body;
 
   try {
     // Check if email already exists
@@ -30,6 +30,7 @@ const signup = async (req, res) => {
         visitorType,
         phone,
         sex,
+        age
       }
     });
     // check if the visitor is employee or manager to handle it with his departmenet
@@ -95,31 +96,36 @@ const login = async (req, res) => {
     // Find the visitor by email
     const visitor = await prisma.visitor.findUnique({ where: { email } });
     if (!visitor || !await authHelper.comparePassword(password, visitor.password)) {
-        // 401: Unauthorized
+      // 401: Unauthorized
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // Generate a token for the logged-in user
-    // the token is generated using the generateToken function from the authHelper file
-    if(visitor.visitorType === 'HRADMIN'){
+    let token;
+
+    if (visitor.visitorType === 'HRADMIN') {
       const hRAdmin = await prisma.hRAdmin.findUnique({ where: { visitorId: visitor.id } });
-      const token = authHelper.generateToken({ HrId: hRAdmin.id, visitorType: visitor.visitorType, id: visitor.id });
-    }
-    else if(visitor.visitorType === 'MANAGER'){
+      token = authHelper.generateToken({ HrId: hRAdmin.id, visitorType: visitor.visitorType, id: visitor.id });
+    } else if (visitor.visitorType === 'MANAGER') {
       const manager = await prisma.manager.findUnique({ where: { visitorId: visitor.id } });
-      const token = authHelper.generateToken({ managerId: manager.id, visitorType: visitor.visitorType, id: visitor.id });
+      token = authHelper.generateToken({ managerId: manager.id, visitorType: visitor.visitorType, id: visitor.id, departmentId: manager.departmentId });
+    } else if (visitor.visitorType === 'EMPLOYEE') {
+      const employee = await prisma.employee.findUnique({ where: { visitorId: visitor.id } });
+      token = authHelper.generateToken({ employeeId: employee.id, visitorType: visitor.visitorType, id: visitor.id, departmentId: employee.departmentId });
     }
-    else{
-      
+
+    if (!token) {
+      return res.status(400).json({ error: 'Invalid visitor type' });
     }
 
     // Respond with success
     res.json({ message: 'Login successful', token });
   } catch (error) {
+    console.error('Login Error:', error);
     // 500: Internal Server Error
     res.status(500).json({ error: 'Error logging in' });
   }
 };
+
 
 // exports the functions to be used in the routes
 module.exports = {
