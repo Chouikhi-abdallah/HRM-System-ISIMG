@@ -3,37 +3,36 @@ const prisma = new PrismaClient();
 
 //this is the logic for creating a task
 
-const createTask= async (req,res)=>{
-    const {title,description,status,Completiondate,employeeId,managerId}= req.body;
-    try{
-        //if the employee doesn't exist, return an error
-        const employee= await prisma.employee.findUnique({
-            where:{
+const createTask = async (req, res) => {
+    const { title, description, status, completionDate, employeeId, managerId } = req.body;
+    try {
+        const employee = await prisma.employee.findUnique({
+            where: {
                 id: parseInt(employeeId)
             }
         });
-        if(!employee){
-            res.status(404).json({error: 'Employee not found'});
+        if (!employee) {
+            res.status(404).json({ error: 'Employee not found' });
             return;
         }
 
-        const task= await prisma.task.create({
-            data:{
+        const task = await prisma.task.create({
+            data: {
                 title,
                 description,
-                status,
-                completionDate:new Date(Completiondate),
+                status: status.toUpperCase(), // Convert to uppercase
+                completionDate: new Date(completionDate),
                 employeeId: parseInt(employeeId),
                 managerId: parseInt(managerId)
             }
         });
-        res.json({"message":"Task created successfully"});
-        res.status(200);
+        res.status(200).json({ message: 'Task created successfully' });
+    } catch (error) {
+        console.error('Error creating task:', error);
+        res.status(500).json({ error: 'Could not create task' });
     }
-    catch(error){
-        res.status(500).json({error: 'Could not create task'});
-    }
-}
+};
+
 // this is the logic for getting all tasks by employee id
 
 const getTasksByEmployeeId= async (req,res)=>{
