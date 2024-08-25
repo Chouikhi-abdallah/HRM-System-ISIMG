@@ -19,6 +19,7 @@ model Visitor {
   lastName         String
   email            String      @unique
   phone            String
+  age              Int        @default(18)
   sex              String
   visitorType      VisitorType
   password         String
@@ -63,7 +64,7 @@ model Task {
   id             Int       @id @default(autoincrement())
   title          String
   description    String
-  status         String
+  status         TaskStatus
   completionDate DateTime?
   employeeId     Int
   managerId      Int
@@ -118,4 +119,9 @@ enum VisitorType {
   EMPLOYEE
   MANAGER
   HRADMIN
+}
+enum TaskStatus {
+  PENDING
+  INPROGRESS
+  COMPLETED
 }
