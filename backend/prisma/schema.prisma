@@ -58,8 +58,8 @@ model HRAdmin {
   visitorId Int        @unique
   visitor   Visitor    @relation(fields: [visitorId], references: [id])
   trainings Training[]
-  payrolls  Payroll[]  @relation("HRAdminToPayroll")
-  vacations Vacation[] @relation("HRAdminToVacation")
+  payrolls  Payroll[]
+  vacations Vacation[]
 }
 
 model Task {
@@ -105,7 +105,8 @@ model Payroll {
   salary      Float
   paymentDate DateTime
   employee    Employee  @relation(fields: [employeeId], references: [id])
-  HRAdmin     HRAdmin[] @relation("HRAdminToPayroll")
+  hrAdminId   Int
+  hrAdmin     HRAdmin   @relation(fields: [hrAdminId], references: [id])
 }
 
 model Vacation {
@@ -113,8 +114,10 @@ model Vacation {
   employeeId Int
   startDate  DateTime
   endDate    DateTime
+  status     VacationStatus
   employee   Employee  @relation(fields: [employeeId], references: [id])
-  HRAdmin    HRAdmin[] @relation("HRAdminToVacation")
+  hrAdminId  Int
+  hrAdmin    HRAdmin   @relation(fields: [hrAdminId], references: [id])
 }
 
 enum VisitorType {
@@ -126,4 +129,9 @@ enum TaskStatus {
   PENDING
   INPROGRESS
   COMPLETED
+}
+enum VacationStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
