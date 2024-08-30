@@ -6,6 +6,7 @@ const employeeRouter= require('./routes/employeeRoutes');
 const taskRouter= require('./routes/taskRoutes');
 const payrollRouter= require('./routes/payrollRoutes');
 const departementRouter= require('./routes/departementsRoute');
+const visitorRouter= require('./routes/visitorsRoutes');
 const cors=require('cors');
 const app = express();
 const prisma = new PrismaClient();
@@ -34,6 +35,9 @@ app.use('/api/tasks', taskRouter);
 app.use('/api/payroll',payrollRouter);
 //add department routes to /api/departments
 app.use('/api/departments',departementRouter );
+// add visitor routes to /api/visitors
+app.use('/api/visitors', visitorRouter);
+
 
 // add a route to handle 404 errors
 app.use('*', (req, res) => { 
