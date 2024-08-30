@@ -36,20 +36,34 @@ const createTask = async (req, res) => {
 // this is the logic for getting all tasks by employee id
 
 const getTasksByEmployeeId= async (req,res)=>{
-    const {employeeId}= req.params;
-    try{
-        const tasks= await prisma.task.findMany({
-            where:{
-                employeeId: parseInt(employeeId)
-            }
-        });
-        res.json(tasks);
-        res.status(200);
+    const { employeeId } = req.params;
+    try {
+      const tasks = await prisma.task.findMany({
+        where: {
+          employeeId: parseInt(employeeId),
+        },
+        include: {
+          employee: {
+            include: {
+              visitor: true,
+              department:true // Fetch visitor details
+            },
+          },
+        },
+      });
+  
+      const responseTasks = tasks.map(task => ({
+        ...task,
+        employeeName: `${task.employee.visitor.firstName} ${task.employee.visitor.lastName}`,
+      }));
+  
+      res.json(responseTasks);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+      res.status(500).send('Server error');
     }
-    catch(error){
-        res.status(500).json({error: 'Could not get tasks'});
-    }
-}
+  };
+
 const getTaskById= async (req,res)=>{
     const {taskId}= req.params;
     try{
