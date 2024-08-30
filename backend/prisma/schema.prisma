@@ -23,6 +23,8 @@ model Visitor {
   sex              String
   visitorType      VisitorType
   password         String
+  resetPasswordToken   String?
+  resetPasswordExpires BigInt?
   employee         Employee?
   hrAdmin          HRAdmin?
   manager          Manager?
