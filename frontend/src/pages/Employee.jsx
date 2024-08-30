@@ -8,6 +8,7 @@ import Spinner from '../components/Spinner';
 import EmployeeDashboard from '../components/EmployeeDashboard';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import IconButton from '@mui/material/IconButton';
+import RequestLeave from '../components/RequestLeave';
 
 function Employee() {
   const [activeContent, setActiveContent] = useState('Tasks');
@@ -73,7 +74,7 @@ function Employee() {
       case 'Chat':
         return <h1>Coming soon</h1>;
       case 'Request Vacation':
-        return <h1>Request Vacation Content</h1>;
+        return <RequestLeave employeeId={employeeId} />;
       case 'View Trainings':
         return <h1>View Trainings Content</h1>;
       case 'Profile':
