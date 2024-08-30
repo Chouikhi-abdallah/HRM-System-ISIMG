@@ -149,7 +149,7 @@ function Sidebar({ userRole, setActiveContent }) {
               className="flex items-center p-2 hover:bg-gray-700 rounded cursor-pointer"
             >
              <BeachAccessIcon className="mr-2" />
-              Demande Vacation
+              request Leave
               </li>
             <li
               onClick={() => setActiveContent('Profile')}
