@@ -20,7 +20,12 @@ const getEmployeeById= async (req,res)=>{
     const {id}= req.params;
     try{
         const employee= await prisma.employee.findUnique({
-            where: {id: parseInt(id)}
+            where: {id: parseInt(id)},
+            include:{
+              visitor: true,
+              department:true // 
+            }
+
         });
         res.json(employee);
         res.status(200);
