@@ -7,6 +7,8 @@ const taskRouter= require('./routes/taskRoutes');
 const payrollRouter= require('./routes/payrollRoutes');
 const departementRouter= require('./routes/departementsRoute');
 const visitorRouter= require('./routes/visitorsRoutes');
+const vacationRouter=require('./routes/vacationRoutes')
+const hradminRouter=require('./routes/hradminsRoutes');
 const cors=require('cors');
 const app = express();
 const prisma = new PrismaClient();
@@ -37,6 +39,10 @@ app.use('/api/payroll',payrollRouter);
 app.use('/api/departments',departementRouter );
 // add visitor routes to /api/visitors
 app.use('/api/visitors', visitorRouter);
+// add vacation routes to /api/vacations
+app.use('/api/vacations',vacationRouter);
+// add hradmin routes to /api/hradmins
+app.use('/api/hradmins', hradminRouter); 
 
 
 // add a route to handle 404 errors
