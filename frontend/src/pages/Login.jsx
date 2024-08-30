@@ -26,8 +26,14 @@ function Login() {
       const decodedToken = jwtDecode(token);
       const userRole = decodedToken.visitorType;
       const userId=decodedToken.id;
+      const userIdByRole=decodedToken.HrId || decodedToken.managerId || decodedToken.employeeId;
+      const userdepartmentId=decodedToken.departmentId;
+      localStorage.setItem('userId', userId);
+      localStorage.setItem('UserIdByRole',userIdByRole );
+      localStorage.setItem('userdepartmentId',userdepartmentId);
       console.log('User Role:', userRole);
-      console.log('User Id :', userId);
+      console.log('User IdByRole :', userIdByRole);
+      console.log('User DepartmentId:', userdepartmentId);
 
       if (userRole === 'HRADMIN') {
         navigate('/admin');
@@ -63,7 +69,7 @@ function Login() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-2"
           required
         />
         </div>
@@ -75,7 +81,8 @@ function Login() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6
+          px-2"
           required
         />
         </div>
@@ -87,12 +94,17 @@ function Login() {
         </button>
       </form>
       <p className="mt-4 text-center text-sm text-gray-600">
-          Don t have an account? 
-          <Link 
-            to="/signup" 
-            className="font-medium text-blue-600 hover:text-blue-500 ml-1"
-          >
-            Register Now
+        Don&apos;t have an account? 
+        <Link 
+          to="/signup" 
+          className="font-medium text-blue-600 hover:text-blue-500 ml-1"
+        >
+          Register Now
+        </Link>
+      </p>
+      <p className="mt-4 text-center text-sm text-gray-600">
+          <Link to="/forgetpassword" className="font-medium text-blue-600 hover:text-blue-500 ml-1">
+            Forgot your password?
           </Link>
         </p>
       </div>
