@@ -1,22 +1,31 @@
 import  { useState } from 'react';
 import Sidebar from '../components/Sidebar';
+import ManageTrainings from '../components/ManageTraining';
+import ManageLeave from '../components/ManageLeave';
+import Dashboard from '../components/HrAdminDashboard/Dashboard';
 
 function Admin() {
   const [activeContent, setActiveContent] = useState('Dashboard');
   const userRole = 'HRADMIN';
 
+  const visitorId=localStorage.getItem('visitorId');
+  console.log(visitorId);
+  const hrAdminId=localStorage.getItem('UserIdByRole');
+  console.log(hrAdminId);
+
+
   const renderContent = () => {
     switch (activeContent) {
       case 'Dashboard':
-        return <h1>HR Admin Dashboard with Overview</h1>;
+        return <Dashboard hrAdminId={hrAdminId} />;
       case 'Manage Payrolls':
         return <h1>Manage Payrolls Content</h1>;
       case 'Manage Leaves':
-        return <h1>Manage Leaves Content</h1>;
+        return <ManageLeave hrAdminId={hrAdminId}/>;
       case 'Manage Trainings':
-        return <h1>Manage Trainings Content</h1>;
+        return <ManageTrainings hrAdminId={hrAdminId} />;
       default:
-        return <h1>HR Admin Dashboard with Overview</h1>;
+        return <Dashboard hrAdminId={hrAdminId} />;
     }
   };
 

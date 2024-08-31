@@ -79,6 +79,8 @@ function Employee() {
         return <h1>View Trainings Content</h1>;
       case 'Profile':
         return <UpdateVisitor visitorId={id} />;
+        case 'NEWS':
+          return <h1>News content</h1>
       default:
         return <EmployeeDashboard tasks={tasks} />;
     }
