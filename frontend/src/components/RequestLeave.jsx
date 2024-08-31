@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
-import { TextField, Button, Box, Typography, MenuItem, Select, InputLabel, FormControl, IconButton, Grid } from '@mui/material';
-import { Download as DownloadIcon } from '@mui/icons-material';
+import { TextField, Button, Box, Typography, MenuItem, Select, InputLabel, FormControl, IconButton, Grid, Card, CardContent } from '@mui/material';
+import { Download as DownloadIcon, CheckCircle, HourglassEmpty, Cancel } from '@mui/icons-material';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,6 +14,17 @@ function RequestLeave({ employeeId }) {
   const [hrAdmins, setHrAdmins] = useState([]);
   const [selectedHrAdmin, setSelectedHrAdmin] = useState('');
   const [loading, setLoading] = useState(false);
+  const [requests, setRequests] = useState([]);
+
+  // Define fetchRequests function
+  const fetchRequests = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/vacations/getVacationsByEmployee/${employeeId}`);
+      setRequests(response.data);
+    } catch (error) {
+      console.error('Error fetching requests:', error);
+    }
+  };
 
   useEffect(() => {
     // Fetch HR Admins from the backend
@@ -26,7 +38,8 @@ function RequestLeave({ employeeId }) {
     };
 
     fetchHrAdmins();
-  }, []);
+    fetchRequests(); // Fetch leave requests when component mounts
+  }, [employeeId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,16 +54,15 @@ function RequestLeave({ employeeId }) {
 
       if (response.status === 200) {
         toast.success('Vacation request created successfully!', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000,
+          
         });
         setStartDate('');
         setEndDate('');
+        fetchRequests(); // Fetch updated requests after submission
       }
     } catch (error) {
       toast.error('Failed to create vacation request.', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
+        
       });
       console.error('Error creating vacation:', error);
     } finally {
@@ -75,6 +87,19 @@ function RequestLeave({ employeeId }) {
     doc.text(`End Date: ${endDate}`, 20, 60);
     doc.text(`HR Admin ID: ${selectedHrAdmin}`, 20, 70);
     doc.save('leave-request.pdf');
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'APPROVED':
+        return <CheckCircle sx={{ color: 'green' }} />;
+      case 'PENDING':
+        return <HourglassEmpty sx={{ color: 'orange' }} />;
+      case 'REJECTED':
+        return <Cancel sx={{ color: 'red' }} />;
+      default:
+        return <HourglassEmpty sx={{ color: 'gray' }} />;
+    }
   };
 
   return (
@@ -174,6 +199,29 @@ function RequestLeave({ employeeId }) {
           </IconButton>
         </Grid>
       </Grid>
+
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h6" component="h3" sx={{ mb: 2 }}>
+          My Leave Requests
+        </Typography>
+        <Grid container spacing={2}>
+          {requests.map((request) => (
+            <Grid item xs={12} key={request.id}>
+              <Card sx={{ display: 'flex', alignItems: 'center', p: 2, bgcolor: '#f5f5f5' }}>
+                {getStatusIcon(request.status)}
+                <CardContent sx={{ flex: 1 }}>
+                  <Typography variant="body2">
+                    Start Date: {request.startDate} | End Date: {request.endDate}
+                  </Typography>
+                  <Typography variant="body2">
+                    Status: {request.status}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
     </Box>
   );
 }
