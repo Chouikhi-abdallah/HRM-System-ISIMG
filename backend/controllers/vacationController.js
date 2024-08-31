@@ -62,7 +62,47 @@ const changeStatus=async(req,res)=>{
     }
 };
 
+const getVacationsByEmployee=async(req,res)=>{
+    const {employeeId}=req.params;
+    try{
+        const vacations=await prisma.vacation.findMany({
+            where:{
+                employeeId:parseInt(employeeId)
+            }
+        });
+        res.status(200).json(vacations);
+    }catch(error){
+        console.error('Error getting vacations:',error);
+        res.status(500).json({error:'Could not get vacations'});
+    }
+};
+
+const getVacationsByHrId = async (req, res) => {
+    const { hrAdminId } = req.params;
+    try {
+        const vacations = await prisma.vacation.findMany({
+            where: { hrAdminId: parseInt(hrAdminId) },
+            include: {
+                employee: {
+                    include: {
+                        visitor: true,
+                        department: true,
+                    },
+                },
+            },
+        });
+
+        res.status(200).json(vacations);
+    } catch (error) {
+        console.error('Error getting vacations:', error);
+        res.status(500).json({ error: 'Could not get vacations' });
+    }
+};
+
+
 module.exports={
     createRequest,
-    changeStatus
+    changeStatus,
+    getVacationsByEmployee,
+    getVacationsByHrId
 }
