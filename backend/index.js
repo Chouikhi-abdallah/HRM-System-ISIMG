@@ -1,5 +1,4 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
 const authRoutes = require('./routes/authRoutes');
 const managerRouter= require('./routes/managerRoute');
 const employeeRouter= require('./routes/employeeRoutes');
@@ -9,9 +8,9 @@ const departementRouter= require('./routes/departementsRoute');
 const visitorRouter= require('./routes/visitorsRoutes');
 const vacationRouter=require('./routes/vacationRoutes')
 const hradminRouter=require('./routes/hradminsRoutes');
+const trainingRouter=require('./routes/trainingRoutes');
 const cors=require('cors');
 const app = express();
-const prisma = new PrismaClient();
 
 
 // Parse incoming JSON content of requests or response
@@ -43,6 +42,8 @@ app.use('/api/visitors', visitorRouter);
 app.use('/api/vacations',vacationRouter);
 // add hradmin routes to /api/hradmins
 app.use('/api/hradmins', hradminRouter); 
+//add training routes to /api/trainings
+app.use('/api/trainings',trainingRouter);
 
 
 // add a route to handle 404 errors
