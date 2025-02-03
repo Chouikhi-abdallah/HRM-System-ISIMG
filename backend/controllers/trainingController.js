@@ -28,13 +28,22 @@ const getAll = async (req, res) => {
                 hrAdminId: parseInt(hrAdminId)
             }
         });
-        console.log(trainings);
         res.status(200).json(trainings);
     } catch (error) {
         console.error(error); 
         res.status(500).json({ error: 'Could not get trainings' });
     }
 };
+// get all trainings
+const all=  async (req,res) =>{
+    try{
+        const trainings= await prisma.training.findMany();
+        res.status(200).json(trainings)
+    }catch(error){
+        console.error(error)
+        res.status(500).json({ error: 'Could not get trainings' })
+    }
+} ;
 
 
 const deleteTraining= async(req,res)=>{
@@ -95,4 +104,4 @@ const updateTraining=async(req,res)=>{
 
 
 
-module.exports = {createTraining,getAll,deleteTraining,updateTraining};
+module.exports = {createTraining,getAll,all,deleteTraining,updateTraining};
