@@ -3,15 +3,18 @@ import Sidebar from '../components/Sidebar';
 import ManageTrainings from '../components/ManageTraining';
 import ManageLeave from '../components/ManageLeave';
 import Dashboard from '../components/HrAdminDashboard/Dashboard';
+import ManagePayrolls from '../components/ManagePayroll';
+import UpdateVisitor from '../components/updateProfile';
 
 function Admin() {
   const [activeContent, setActiveContent] = useState('Dashboard');
+
   const userRole = 'HRADMIN';
 
-  const visitorId=localStorage.getItem('visitorId');
-  console.log(visitorId);
-  const hrAdminId=localStorage.getItem('UserIdByRole');
-  console.log(hrAdminId);
+  const visitorId=sessionStorage.getItem('userId');
+  console.log("visitorId",visitorId);
+  const hrAdminId=sessionStorage.getItem('UserIdByRole');
+  console.log("hrAdminId",hrAdminId);
 
 
   const renderContent = () => {
@@ -19,11 +22,13 @@ function Admin() {
       case 'Dashboard':
         return <Dashboard hrAdminId={hrAdminId} />;
       case 'Manage Payrolls':
-        return <h1>Manage Payrolls Content</h1>;
+        return <ManagePayrolls hrAdminId={hrAdminId}/>;
       case 'Manage Leaves':
         return <ManageLeave hrAdminId={hrAdminId}/>;
       case 'Manage Trainings':
         return <ManageTrainings hrAdminId={hrAdminId} />;
+      case 'Profile':
+        return <UpdateVisitor visitorId={visitorId} />;
       default:
         return <Dashboard hrAdminId={hrAdminId} />;
     }

@@ -49,7 +49,7 @@ function Signup() {
       const response = await axios.post('http://localhost:5000/api/auth/signup', dataToSubmit);
   
       const { token } = response.data;
-      localStorage.setItem('token', token);
+      sessionStorage.setItem('token', token);
   
       alert('Signup successful');
       navigate('/login'); // Redirect to login after signup

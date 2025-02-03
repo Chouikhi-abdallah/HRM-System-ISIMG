@@ -6,16 +6,19 @@ import TaskDistribute from '../components/Taskdistribute';
 import TaskDistributionChart from '../components/TaskDistributionChart';
 import Spinner from '../components/Spinner';
 import UpdateVisitor from '../components/updateProfile';
+import RequestLeave from '../components/RequestLeave';
 function Manager() {
   const [activeContent, setActiveContent] = useState('Dashboard');
   const [managerData, setManagerData] = useState(null);
   const [taskCount, setTaskCount] = useState(0);
 
   const userRole = 'MANAGER';
-  const id=localStorage.getItem('userId');
-  const managerId = localStorage.getItem('UserIdByRole'); // Assuming you saved the userId in localStorage during login
-  const departementId = localStorage.getItem('userdepartmentId');
+  const id=sessionStorage.getItem('userId');
+  const managerId = sessionStorage.getItem('UserIdByRole'); // Assuming you saved the userId in localStorage during login
+  const departementId = sessionStorage.getItem('userdepartmentId');
+  console.log('Department ID:', departementId);
   console.log('Manager ID:', managerId);
+  console.log('User ID:', id);  
 
   useEffect(() => {
     // Fetch manager data when the component mounts
@@ -71,6 +74,8 @@ function Manager() {
         return <TaskDistribute/>;
       case 'Rate Employee':
         return <h1>Rate Employee Content</h1>;
+      case 'Request Vacation':
+        return <RequestLeave visitorId={id} />;  
       case 'Chat':
         return <h1>Coming soon</h1>;
       case 'Profile':

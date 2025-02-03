@@ -9,6 +9,8 @@ import EmployeeDashboard from '../components/EmployeeDashboard';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import IconButton from '@mui/material/IconButton';
 import RequestLeave from '../components/RequestLeave';
+import ChatUI from '../components/ChatUi';
+import Trainings from '../components/Trainings';
 
 function Employee() {
   const [activeContent, setActiveContent] = useState('Tasks');
@@ -16,9 +18,9 @@ function Employee() {
   const [taskCount, setTaskCount] = useState(0);
   const [tasks, setTasks] = useState([]);
   const userRole = 'EMPLOYEE';
-  const id = localStorage.getItem('userId');
-  const employeeId = localStorage.getItem('UserIdByRole');
-  const employeedepartmentId = localStorage.getItem('userdepartmentId');
+  const id = sessionStorage.getItem('userId');
+  const employeeId = sessionStorage.getItem('UserIdByRole');
+  const employeedepartmentId = sessionStorage.getItem('userdepartmentId');
 
   const fetchEmployeeData = async () => {
     try {
@@ -72,15 +74,15 @@ function Employee() {
       case 'Tasks':
         return <Kanban employeeId={employeeId} />;
       case 'Chat':
-        return <h1>Coming soon</h1>;
+        return <ChatUI />;
       case 'Request Vacation':
-        return <RequestLeave employeeId={employeeId} />;
+        return <RequestLeave visitorId={id} />;
       case 'View Trainings':
         return <h1>View Trainings Content</h1>;
       case 'Profile':
         return <UpdateVisitor visitorId={id} />;
-        case 'NEWS':
-          return <h1>News content</h1>
+        case 'News':
+          return <Trainings/>
       default:
         return <EmployeeDashboard tasks={tasks} />;
     }

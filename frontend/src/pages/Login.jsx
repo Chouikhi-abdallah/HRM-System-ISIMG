@@ -21,16 +21,16 @@ function Login() {
       console.log('Login Response:', response.data); 
   
       const { token } = response.data;
-      localStorage.setItem('token', token);
+      sessionStorage.setItem('token', token);
   
       const decodedToken = jwtDecode(token);
       const userRole = decodedToken.visitorType;
       const userId=decodedToken.id;
       const userIdByRole=decodedToken.HrId || decodedToken.managerId || decodedToken.employeeId;
       const userdepartmentId=decodedToken.departmentId;
-      localStorage.setItem('userId', userId);
-      localStorage.setItem('UserIdByRole',userIdByRole );
-      localStorage.setItem('userdepartmentId',userdepartmentId);
+      sessionStorage.setItem('userId', userId);
+      sessionStorage.setItem('UserIdByRole',userIdByRole );
+      sessionStorage.setItem('userdepartmentId',userdepartmentId);
       console.log('User Role:', userRole);
       console.log('User IdByRole :', userIdByRole);
       console.log('User DepartmentId:', userdepartmentId);
