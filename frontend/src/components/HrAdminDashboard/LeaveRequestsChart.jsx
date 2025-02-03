@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-// src/components/Dashboard/LeaveRequestsChart.jsx
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import axios from 'axios';
 
 const LeaveRequestsChart = ({ hrAdminId }) => {
   const [data, setData] = useState([]);
@@ -10,9 +10,8 @@ const LeaveRequestsChart = ({ hrAdminId }) => {
   useEffect(() => {
     const fetchLeaveData = async () => {
       try {
-        // Replace with actual API call
-        const leaveData = await fetchLeaveRequests();
-        setData(leaveData);
+        const leaveData = await fetchLeaveRequests(hrAdminId);
+        setData(formatLeaveData(leaveData));
       } catch (error) {
         console.error('Error fetching leave requests data:', error);
       }
@@ -21,16 +20,37 @@ const LeaveRequestsChart = ({ hrAdminId }) => {
     fetchLeaveData();
   }, [hrAdminId]);
 
-  // Mock data
-  const fetchLeaveRequests = async () => {
-    return [
-      { month: 'Jan', Approved: 10, Pending: 5, Rejected: 2 },
-      { month: 'Feb', Approved: 12, Pending: 3, Rejected: 1 },
-      { month: 'Mar', Approved: 8, Pending: 6, Rejected: 0 },
-      { month: 'Apr', Approved: 15, Pending: 2, Rejected: 1 },
-      { month: 'May', Approved: 9, Pending: 4, Rejected: 2 },
-      { month: 'Jun', Approved: 13, Pending: 5, Rejected: 0 },
-    ];
+  const fetchLeaveRequests = async (hrAdminId) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/vacations/getVacationsByHrId/${hrAdminId}`);
+      return response.data; // Assuming the response is an array of vacation data
+    } catch (error) {
+      console.error('Error fetching leave requests:', error);
+      return []; // Return an empty array in case of error
+    }
+  };
+
+  const formatLeaveData = (vacations) => {
+    // Transform vacations into the format expected by the chart
+    const leaveData = vacations.reduce((acc, vacation) => {
+      const month = new Date(vacation.startDate).toLocaleString('default', { month: 'short' });
+      const existing = acc.find(item => item.month === month);
+
+      if (existing) {
+        existing[vacation.status] = (existing[vacation.status] || 0) + 1; // Increment the count for the status
+      } else {
+        acc.push({
+          month,
+          Approved: vacation.status === 'APPROVED' ? 1 : 0,
+          Pending: vacation.status === 'PENDING' ? 1 : 0,
+          Rejected: vacation.status === 'REJECTED' ? 1 : 0,
+        });
+      }
+
+      return acc;
+    }, []);
+
+    return leaveData.sort((a, b) => new Date(`01 ${a.month}`) - new Date(`01 ${b.month}`));
   };
 
   return (
