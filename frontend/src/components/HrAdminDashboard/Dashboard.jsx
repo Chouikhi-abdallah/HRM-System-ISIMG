@@ -4,9 +4,8 @@ import { Grid } from '@mui/material';
 import OverviewCards from './OverviewCards';
 import LeaveRequestsChart from './LeaveRequestsChart';
 import PayrollChart from './PayrollChart';
-import TrainingParticipationChart from './TrainingParticipationChart';
-import RecentActivities from './RecentActivities';
 import DepartmentEmployeeChart from './DepartmentEmployeeChart';
+import DonutChart from './EmployeeDistribution';
 
 const Dashboard = ({ hrAdminId }) => {
   return (
@@ -26,16 +25,14 @@ const Dashboard = ({ hrAdminId }) => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <TrainingParticipationChart hrAdminId={hrAdminId} />
+          <DonutChart  />
         </Grid>
         <Grid item xs={12} md={6}>
           <DepartmentEmployeeChart hrAdminId={hrAdminId} />
         </Grid>
 
         {/* Recent Activities */}
-        <Grid item xs={12}>
-          <RecentActivities hrAdminId={hrAdminId} />
-        </Grid>
+        
       </Grid>
     </div>
   );
