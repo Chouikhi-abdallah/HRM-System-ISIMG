@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
-// eslint-disable-next-line no-unused-vars
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Paper, Button, TextField, Typography, Grid, Card, CardContent, IconButton, Table, TableHead, TableRow,
   TableCell, TableBody, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
@@ -11,7 +10,6 @@ import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Refresh as Refr
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import TrainingCalendar from './TrainingCalendar';
 
 function ManageTrainings({ hrAdminId }) {
@@ -26,17 +24,27 @@ function ManageTrainings({ hrAdminId }) {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [trainingToDelete, setTrainingToDelete] = useState(null);
 
+  // Fetch initial data and refresh everything including the calendar
+  const handleRefresh = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/trainings/all/${hrAdminId}`);
+      setTrainings(response.data || []);
+    } catch (error) {
+      console.error('Error fetching trainings:', error);
+    }
+  };
+
   useEffect(() => {
     handleRefresh();
-  }, []);
+  }, [hrAdminId]);
 
   const handleCreateTraining = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/trainings/createTraining', {
+      await axios.post('http://localhost:5000/api/trainings/createTraining', {
         ...newTraining,
-        hrAdminId
+        hrAdminId,
       });
-      setTrainings((prev) => [...prev, response.data.training]);
+      await handleRefresh(); // Re-fetch updated data
       setNewTraining({ title: '', description: '', schedule: '' });
       toast.success('Training created successfully');
     } catch (error) {
@@ -47,11 +55,11 @@ function ManageTrainings({ hrAdminId }) {
 
   const handleUpdateTraining = async () => {
     try {
-      const response = await axios.put('http://localhost:5000/api/trainings/updateTraining', {
+      await axios.put('http://localhost:5000/api/trainings/updateTraining', {
         trainingId: editTrainingId,
-        ...newTraining
+        ...newTraining,
       });
-      setTrainings((prev) => prev.map(training => (training.id === editTrainingId ? response.data.training : training)));
+      await handleRefresh(); // Re-fetch updated data
       setNewTraining({ title: '', description: '', schedule: '' });
       setIsEditing(false);
       setEditTrainingId(null);
@@ -62,22 +70,12 @@ function ManageTrainings({ hrAdminId }) {
     }
   };
 
-  const handleEditTraining = (training) => {
-    setNewTraining({
-      title: training.title,
-      description: training.description,
-      schedule: new Date(training.schedule).toISOString().slice(0, 16)
-    });
-    setEditTrainingId(training.id);
-    setIsEditing(true);
-  };
-
   const handleDeleteTraining = async () => {
     try {
       await axios.delete('http://localhost:5000/api/trainings/deleteTraining', {
         data: { trainingId: trainingToDelete.id }
       });
-      setTrainings((prev) => prev.filter((training) => training.id !== trainingToDelete.id));
+      await handleRefresh(); // Re-fetch updated data
       setOpenDeleteDialog(false);
       toast.success('Training deleted successfully');
     } catch (error) {
@@ -91,13 +89,14 @@ function ManageTrainings({ hrAdminId }) {
     setNewTraining((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleRefresh = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5000/api/trainings/all/${hrAdminId}`);
-      setTrainings(response.data || []);
-    } catch (error) {
-      console.error('Error fetching trainings:', error);
-    }
+  const handleEditTraining = (training) => {
+    setNewTraining({
+      title: training.title,
+      description: training.description,
+      schedule: new Date(training.schedule).toISOString().slice(0, 16),
+    });
+    setEditTrainingId(training.id);
+    setIsEditing(true);
   };
 
   const handleCancelEdit = () => {
@@ -256,9 +255,11 @@ function ManageTrainings({ hrAdminId }) {
       </Dialog>
 
       <ToastContainer />
+
+      {/* Pass trainings as a prop to ensure the calendar updates */}
       <Grid item xs={12}>
-    <TrainingCalendar hrAdminId={hrAdminId} />
-</Grid>
+        <TrainingCalendar hrAdminId={hrAdminId} trainings={trainings} />
+      </Grid>
     </Paper>
   );
 }
