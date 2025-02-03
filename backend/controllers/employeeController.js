@@ -4,7 +4,11 @@ const prisma = new PrismaClient();
 // this is the logic for getting all employees from the database
 const getAllEmployees= async (req,res)=>{
     try{
-        const employees= await prisma.employee.findMany();
+        const employees= await prisma.employee.findMany({
+          include:{
+            visitor:true,
+          }}
+        );
         res.json(employees);
         res.status(200);
     }
