@@ -1,20 +1,40 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
-// src/components/Dashboard/DepartmentEmployeeChart.jsx
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import axios from 'axios';
 
 const DepartmentEmployeeChart = ({ hrAdminId }) => {
   const [data, setData] = useState([]);
 
   const COLORS = ['#ff6384', '#36a2eb', '#ffcd56', '#4caf50', '#ab47bc'];
 
+  // Mapping department IDs to names
+  const departmentNames = {
+    1: 'Development',
+    2: 'Testing',
+    3: 'Operations',
+    4: 'Security',
+  };
+
   useEffect(() => {
     const fetchDepartmentData = async () => {
       try {
-        // Replace with actual API call
-        const departmentData = await fetchDepartmentEmployees();
-        setData(departmentData);
+        const departmentIds = [1, 2, 3, 4]; // IDs for departments
+        const promises = departmentIds.map(id => 
+          axios.get(`http://localhost:5000/api/employees/bydepartment/${id}`)
+        );
+
+        const results = await Promise.all(promises);
+
+        // Aggregate results into a format suitable for the PieChart
+        const aggregatedData = results.map((response, index) => ({
+          name: departmentNames[departmentIds[index]], // Get department name from mapping
+          value: response.data.length, // Count of employees in that department
+        }));
+
+        setData(aggregatedData);
       } catch (error) {
         console.error('Error fetching department employee data:', error);
       }
@@ -22,17 +42,6 @@ const DepartmentEmployeeChart = ({ hrAdminId }) => {
 
     fetchDepartmentData();
   }, [hrAdminId]);
-
-  // Mock data
-  const fetchDepartmentEmployees = async () => {
-    return [
-      { name: 'HR', value: 15 },
-      { name: 'Engineering', value: 50 },
-      { name: 'Sales', value: 30 },
-      { name: 'Marketing', value: 25 },
-      { name: 'Support', value: 20 },
-    ];
-  };
 
   return (
     <Card className="shadow-lg">
