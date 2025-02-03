@@ -1,10 +1,11 @@
-const {getVacationsByEmployee,changeStatus, createRequest,getVacationsByHrId}=require('../controllers/vacationController');
+const {getVacationsByVisitor,deleteVacation,changeStatus, createRequest,getVacationsByHrId}=require('../controllers/vacationController');
 const express=require('express');
 const router=express.Router();
 
 router.post('/createRequest',createRequest);
 router.put('/changeStatus',changeStatus);
-router.get('/getVacationsByEmployee/:employeeId',getVacationsByEmployee);
+router.get('/getVacationsByVisitor/:visitorId',getVacationsByVisitor);
 router.get('/getVacationsByHrId/:hrAdminId',getVacationsByHrId);
+router.delete('/deleteVacation/:vacationId',deleteVacation);
 
 module.exports=router;
