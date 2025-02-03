@@ -2,13 +2,13 @@ const {PrismaClient}=require('@prisma/client');
 const prisma = new PrismaClient();
 
 const createRequest = async (req, res) => {
-    const { employeeId, startDate, endDate, hrAdminId } = req.body;
+    const { visitorId, startDate, endDate, hrAdminId } = req.body;
     try {
-        const employee = await prisma.employee.findUnique({
-            where: { id: parseInt(employeeId) },
+        const visitor = await prisma.visitor.findUnique({
+            where: { id: parseInt(visitorId) },
         });
-        if (!employee) {
-            return res.status(404).json({ error: 'Employee not found' });
+        if (!visitor) {
+            return res.status(404).json({ error: 'visitor not found' });
         }
 
         const hrAdmin = await prisma.hRAdmin.findUnique({
@@ -20,7 +20,7 @@ const createRequest = async (req, res) => {
 
         const vacation = await prisma.vacation.create({
             data: {
-                employeeId: parseInt(employeeId),
+                visitorId: parseInt(visitorId),
                 hrAdminId: parseInt(hrAdminId),
                 startDate: new Date(startDate),
                 endDate: new Date(endDate),
@@ -62,12 +62,12 @@ const changeStatus=async(req,res)=>{
     }
 };
 
-const getVacationsByEmployee=async(req,res)=>{
-    const {employeeId}=req.params;
+const getVacationsByVisitor=async(req,res)=>{
+    const {visitorId}=req.params;
     try{
         const vacations=await prisma.vacation.findMany({
             where:{
-                employeeId:parseInt(employeeId)
+                visitorId:parseInt(visitorId)
             }
         });
         res.status(200).json(vacations);
@@ -83,10 +83,10 @@ const getVacationsByHrId = async (req, res) => {
         const vacations = await prisma.vacation.findMany({
             where: { hrAdminId: parseInt(hrAdminId) },
             include: {
-                employee: {
-                    include: {
-                        visitor: true,
-                        department: true,
+                visitor: {
+                    select: {
+                        firstName: true,
+                        lastName: true,
                     },
                 },
             },
@@ -98,11 +98,37 @@ const getVacationsByHrId = async (req, res) => {
         res.status(500).json({ error: 'Could not get vacations' });
     }
 };
+// delete vacation
+const deleteVacation = async (req, res) => {
+    const { vacationId } = req.params;
+    try {
+        const vacation = await prisma.vacation.findUnique({
+            where: {
+                id: parseInt(vacationId),
+            },
+        });
+        if (!vacation) {
+            res.status(404).json({ error: 'Vacation not found' });
+            return;
+        }
+        await prisma.vacation.delete({
+            where: {
+                id: parseInt(vacationId),
+            },
+        });
+        res.status(200).json({ message: 'Vacation deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting vacation:', error);
+        res.status(500).json({ error: 'Could not delete vacation' });
+    }
+};
+
 
 
 module.exports={
     createRequest,
     changeStatus,
-    getVacationsByEmployee,
-    getVacationsByHrId
+    getVacationsByVisitor,
+    getVacationsByHrId,
+    deleteVacation
 }
