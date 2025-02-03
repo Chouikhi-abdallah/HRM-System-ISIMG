@@ -1,6 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
-// src/components/Dashboard/OverviewCards.jsx
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Grid, Card, CardContent, Typography } from '@mui/material';
 import PeopleIcon from '@mui/icons-material/People';
 import EventNoteIcon from '@mui/icons-material/EventNote';
@@ -19,7 +19,6 @@ const OverviewCards = ({ hrAdminId }) => {
     // Fetch data from API endpoints and update state
     const fetchData = async () => {
       try {
-        // Replace with actual API calls
         const totalEmployees = await fetchTotalEmployees();
         const pendingLeaves = await fetchPendingLeaves();
         const upcomingTrainings = await fetchUpcomingTrainings();
@@ -39,25 +38,29 @@ const OverviewCards = ({ hrAdminId }) => {
     fetchData();
   }, [hrAdminId]);
 
-  // Mock API functions
   const fetchTotalEmployees = async () => {
-    // Implement API call
-    return 120;
+    const response = await fetch('http://localhost:5000/api/employees/all');
+    const employees = await response.json();
+    return employees.length; // Total number of employees
   };
 
   const fetchPendingLeaves = async () => {
-    // Implement API call
-    return 5;
+    const response = await fetch(`http://localhost:5000/api/vacations/getVacationsByHrId/${hrAdminId}`);
+    const vacations = await response.json();
+    // Count pending leaves
+    return vacations.filter(vacation => vacation.status === 'PENDING').length;
   };
 
   const fetchUpcomingTrainings = async () => {
-    // Implement API call
-    return 3;
+    const response = await fetch(`http://localhost:5000/api/trainings/all/${hrAdminId}`);
+    const trainings = await response.json();
+    return trainings.length; // Total number of upcoming trainings
   };
 
   const fetchTotalPayroll = async () => {
-    // Implement API call
-    return 50000;
+    const response = await fetch('http://localhost:5000/api/payroll/all');
+    const payrolls = await response.json();
+    return payrolls.reduce((acc, payroll) => acc + payroll.salary, 0); // Total payroll amount
   };
 
   const cardData = [
@@ -78,7 +81,7 @@ const OverviewCards = ({ hrAdminId }) => {
     },
     {
       title: 'Total Payroll (This Month)',
-      value: `$${data.totalPayroll}`,
+      value: `${data.totalPayroll.toFixed(2)}`, // Format to 2 decimal places
       icon: <MonetizationOnIcon fontSize="large" className="text-yellow-500" />,
     },
   ];
