@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import jsPDF from 'jspdf';
 
-function RequestLeave({ employeeId }) {
+function RequestLeave({ visitorId }) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [hrAdmins, setHrAdmins] = useState([]);
@@ -19,7 +19,7 @@ function RequestLeave({ employeeId }) {
   // Define fetchRequests function
   const fetchRequests = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/vacations/getVacationsByEmployee/${employeeId}`);
+      const response = await axios.get(`http://localhost:5000/api/vacations/getVacationsByVisitor/${visitorId}`);
       setRequests(response.data);
     } catch (error) {
       console.error('Error fetching requests:', error);
@@ -39,14 +39,14 @@ function RequestLeave({ employeeId }) {
 
     fetchHrAdmins();
     fetchRequests(); // Fetch leave requests when component mounts
-  }, [employeeId]);
+  }, [visitorId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const response = await axios.post('http://localhost:5000/api/vacations/createRequest', {
-        employeeId,
+        visitorId,
         startDate,
         endDate,
         hrAdminId: selectedHrAdmin,
@@ -82,7 +82,7 @@ function RequestLeave({ employeeId }) {
 
     doc.setFontSize(12);
     doc.setFont('Helvetica', 'normal');
-    doc.text(`Employee ID: ${employeeId}`, 20, 40);
+    doc.text(`visitor ID: ${visitorId}`, 20, 40);
     doc.text(`Start Date: ${startDate}`, 20, 50);
     doc.text(`End Date: ${endDate}`, 20, 60);
     doc.text(`HR Admin ID: ${selectedHrAdmin}`, 20, 70);
