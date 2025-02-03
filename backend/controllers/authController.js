@@ -109,6 +109,7 @@ const login = async (req, res) => {
 
     if (visitor.visitorType === 'HRADMIN') {
       const hRAdmin = await prisma.hRAdmin.findUnique({ where: { visitorId: visitor.id } });
+      console.log(visitor.id);
       token = authHelper.generateToken({ HrId: hRAdmin.id, visitorType: visitor.visitorType, id: visitor.id });
     } else if (visitor.visitorType === 'MANAGER') {
       const manager = await prisma.manager.findUnique({ where: { visitorId: visitor.id } });
