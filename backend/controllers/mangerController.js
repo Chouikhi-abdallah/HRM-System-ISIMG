@@ -2,16 +2,30 @@ const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
 
 // this is the logic for getting all managers from the database
-const getAllManagers= async (req,res)=>{
-    try{
-        const managers= await prisma.visitor.findMany({where: {visitorType: 'MANAGER'}});
-        res.json(managers);
-        res.status(200);
+const getAllManagers = async (req, res) => {
+    try {
+        const managers = await prisma.manager.findMany({
+            include: {
+                visitor: {
+                    select: {
+                        id: true, // Include necessary fields
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                        // Don't include password
+                    },
+                },
+            },
+        });
+        res.status(200).json(managers);
+    } catch (error) {
+        console.error('Error fetching managers:', error);
+        res.status(500).json({ error: 'Could not get managers' });
     }
-    catch(error){
-        res.status(500).json({error: 'Could not get managers'});
-    }
-}
+};
+
+
+
 // this is the logic for getting a manager by id from the database
 const getManagerById= async (req,res)=>{    
     const {id}= req.params;
