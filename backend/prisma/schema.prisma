@@ -14,22 +14,26 @@ datasource db {
 }
 
 model Visitor {
-  id               Int         @id @default(autoincrement())
-  firstName        String
-  lastName         String
-  email            String      @unique
-  phone            String
-  age              Int        @default(18)
-  sex              String
-  visitorType      VisitorType
-  password         String
+  id                   Int         @id @default(autoincrement())
+  firstName            String
+  lastName             String
+  email                String      @unique
+  phone                String
+  age                  Int         @default(18)
+  sex                  String
+  visitorType          VisitorType
+  password             String
   resetPasswordToken   String?
-  resetPasswordExpires BigInt?
-  employee         Employee?
-  hrAdmin          HRAdmin?
-  manager          Manager?
-  messagesReceived Message[]   @relation("MessagesReceived")
-  messagesSent     Message[]   @relation("MessagesSent")
+  resetPasswordExpires BigInt?  
+  employee             Employee?
+  manager              Manager?
+  hrAdmin              HRAdmin?
+
+  Payroll              Payroll[]   
+  Vacation             Vacation[]  
+
+  messagesReceived     Message[]   @relation("MessagesReceived")
+  messagesSent         Message[]   @relation("MessagesSent")
 }
 
 model Employee {
@@ -38,25 +42,25 @@ model Employee {
   departmentId Int
   department   Department @relation(fields: [departmentId], references: [id])
   visitor      Visitor    @relation(fields: [visitorId], references: [id])
-  Payroll      Payroll[]
+
   tasks        Task[]
-  Vacation     Vacation[]
 }
 
 model Manager {
-  id           Int         @id @default(autoincrement())
-  visitorId    Int         @unique
-  departmentId Int         @unique
+  id           Int        @id @default(autoincrement())
+  visitorId    Int        @unique
+  departmentId Int        @unique
   department   Department @relation(fields: [departmentId], references: [id])
   visitor      Visitor     @relation(fields: [visitorId], references: [id])
+
   tasks        Task[]
 }
-
 
 model HRAdmin {
   id        Int        @id @default(autoincrement())
   visitorId Int        @unique
   visitor   Visitor    @relation(fields: [visitorId], references: [id])
+
   trainings Training[]
   payrolls  Payroll[]
   vacations Vacation[]
@@ -75,12 +79,14 @@ model Task {
 }
 
 model Message {
-  id         Int     @id @default(autoincrement())
-  text       String
-  senderId   Int
-  receiverId Int
-  receiver   Visitor @relation("MessagesReceived", fields: [receiverId], references: [id])
-  sender     Visitor @relation("MessagesSent", fields: [senderId], references: [id])
+ id          Int      @id @default(autoincrement())
+  text        String
+  senderId    Int
+  receiverId  Int
+  timestamp   DateTime @default(now())  
+  status      String  @default("sent")  
+  receiver    Visitor @relation("MessagesReceived", fields: [receiverId], references: [id])
+  sender      Visitor @relation("MessagesSent", fields: [senderId], references: [id])
 }
 
 model Training {
@@ -101,23 +107,23 @@ model Department {
 
 model Payroll {
   id          Int       @id @default(autoincrement())
-  employeeId  Int
+  visitorId   Int       
   salary      Float
   paymentDate DateTime
-  employee    Employee  @relation(fields: [employeeId], references: [id])
+  visitor     Visitor   @relation(fields: [visitorId], references: [id])  
   hrAdminId   Int
   hrAdmin     HRAdmin   @relation(fields: [hrAdminId], references: [id])
 }
 
 model Vacation {
-  id         Int       @id @default(autoincrement())
-  employeeId Int
+  id         Int        @id @default(autoincrement())
+  visitorId  Int        
   startDate  DateTime
   endDate    DateTime
   status     VacationStatus
-  employee   Employee  @relation(fields: [employeeId], references: [id])
+  visitor    Visitor    @relation(fields: [visitorId], references: [id])  
   hrAdminId  Int
-  hrAdmin    HRAdmin   @relation(fields: [hrAdminId], references: [id])
+  hrAdmin    HRAdmin    @relation(fields: [hrAdminId], references: [id])
 }
 
 enum VisitorType {
@@ -125,11 +131,13 @@ enum VisitorType {
   MANAGER
   HRADMIN
 }
+
 enum TaskStatus {
   PENDING
   INPROGRESS
   COMPLETED
 }
+
 enum VacationStatus {
   PENDING
   APPROVED
