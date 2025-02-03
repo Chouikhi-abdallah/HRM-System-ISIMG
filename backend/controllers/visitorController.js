@@ -4,6 +4,27 @@ const authHelper = require('../helpers/authHelper');
 
 // this is the logic for updating a user information in the database
 
+
+// getAllvistiros an only firstName lastName and Role
+const getAllVisitors = async (req, res) => {
+    try {
+        const visitors = await prisma.visitor.findMany({
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                phone: true,
+                sex: true,
+            }
+        });
+        res.status(200).json(visitors);
+    } catch (error) {
+        console.error('Error fetching visitors:', error);
+        res.status(500).json({ error: 'Could not get visitors' });
+    }
+};
+
 const updateVisitor = async (req, res) => {
     // get the request from the body
     const { firstName, lastName, email, password,phone } = req.body;
@@ -58,4 +79,4 @@ const getVisitorById = async (req, res) => {
     }
 };
 
-module.exports={updateVisitor,getVisitorById};
+module.exports={updateVisitor,getVisitorById,getAllVisitors};
