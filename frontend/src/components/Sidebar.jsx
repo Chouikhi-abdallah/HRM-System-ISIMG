@@ -26,9 +26,9 @@ function Sidebar({ userRole, setActiveContent }) {
   const handleLogout = () => {
     toast('Goodbye!', { autoClose: 3000 });
     setTimeout(() => {
-      localStorage.removeItem('UserIdByRole');
-      localStorage.removeItem('userdepartmentId');
-      localStorage.removeItem('token');
+      sessionStorage.removeItem('UserIdByRole');
+      sessionStorage.removeItem('userdepartmentId');
+      sessionStorage.removeItem('token');
       navigate('/login');
     }, 3000);
   };
@@ -67,6 +67,13 @@ function Sidebar({ userRole, setActiveContent }) {
               >
                 <TrainingIcon className="mr-2" />
                 Manage Trainings
+              </li>
+              <li
+                onClick={() => setActiveContent('Profile')}
+                className="flex items-center p-2 hover:bg-indigo-500 rounded cursor-pointer transition-colors"
+              >
+                <ProfileIcon className="mr-2" />
+                Profile
               </li>
             </>
           )}
@@ -107,6 +114,13 @@ function Sidebar({ userRole, setActiveContent }) {
               >
                 <ChatIcon className="mr-2" />
                 Chat
+              </li>
+              <li
+                onClick={() => setActiveContent('Request Vacation')}
+                className="flex items-center p-2 hover:bg-indigo-500 rounded cursor-pointer transition-colors"
+              >
+                <BeachAccessIcon className="mr-2" />
+                Request Leave
               </li>
               <li
                 onClick={() => setActiveContent('Profile')}

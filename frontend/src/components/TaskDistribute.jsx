@@ -14,8 +14,8 @@ const TaskDistribute = () => {
   const [status, setStatus] = useState('PENDING');
   const [completionDate, setCompletionDate] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState('');
-  const [managerId, setManagerId] = useState(localStorage.getItem('UserIdByRole'));
-  const [departmentId, setDepartmentId] = useState(localStorage.getItem('userdepartmentId'));
+  const [managerId, setManagerId] = useState(sessionStorage.getItem('UserIdByRole'));
+  const [departmentId, setDepartmentId] = useState(sessionStorage.getItem('userdepartmentId'));
 
   useEffect(() => {
     // Fetch employees when the component mounts
